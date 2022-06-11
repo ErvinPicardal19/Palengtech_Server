@@ -71,6 +71,11 @@ mongoose.connection.once('open', () => {
     console.log("Connected to MongoDB");
 
     //Development
-    app.listen(port, () => console.log(`Listening on: ${port}...`));
+    // app.listen(port, () => console.log(`Listening on: ${port}...`));
 
+    // Production
+    var server = app.listen(process.env.PORT || 3000, function () {
+        var port = server.address().port;
+        console.log("Express is working on port " + port)
+    })
 })
