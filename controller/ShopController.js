@@ -91,7 +91,7 @@ const deleteShop = async (req, res) => {
 const getShop = async (req, res) => {
     if (!req?.params?.id) return res.status(400).json({ "message": "ID parameter is required" });
 
-    const shop = await Shops.findOne({ _id: req.params.id }).exec()
+    const shop = await Shops.findOne({ user: req.params.id }).exec()
 
     if (!shop) {
         res.status(404).json({ success: false, msg: "Not Found!" });

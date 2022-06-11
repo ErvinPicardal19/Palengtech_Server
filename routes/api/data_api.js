@@ -15,7 +15,6 @@ const {
     getProduct,
     deleteProduct,
     updateProduct,
-    updateProductImage
 } = require('../../controller/ProductController.js');
 
 const {
