@@ -25,7 +25,7 @@ const {
     updateOrder,
     getOrder,
     getTotalSales,
-} = require('../../controller/OrderController.js');
+} = require('../../controller/orderController.js');
 
 const {
     getAllUser,
