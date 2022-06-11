@@ -4,17 +4,19 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const handleLogin = async (req, res) => {
-    const { user, pwd } = req.body
+    const { username, password } = req.body
 
-    if (!user || !pwd) return res.status(400).json({ 'message': 'Username or Password are incorrect' });
+    console.log(username, password)
 
-    const foundUser = await User.findOne({ username: user }).exec();
+    if (!username || !password) return res.status(400).json({ 'message': 'Username or Password are incorrect' });
+
+    const foundUser = await User.findOne({ username: username }).exec();
 
     if (!foundUser) return res.sendStatus(401);
     console.log(foundUser);
 
     //Evaluate Password
-    const match = await bcrypt.compare(pwd, foundUser.password);
+    const match = await bcrypt.compare(password, foundUser.password);
 
     if (match) {
         const roles = Object.values(foundUser.roles);
@@ -41,9 +43,10 @@ const handleLogin = async (req, res) => {
         const result = await foundUser.save();
         console.log(result);
 
-        res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });//when deployed add option secure: true - only serves on https also option maxAge: 24 * 60 * 60 * 1000, then sameSite for fetch()
+        // res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
+        //when deployed add option secure: true - only serves on https also option maxAge: 24 * 60 * 60 * 1000, then sameSite for fetch()
 
-        res.json({ accessToken });
+        res.json({ accessToken: accessToken, refreshToken: refreshToken, user: foundUser._id });
     } else {
         res.sendStatus(401);
     }

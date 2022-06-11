@@ -6,21 +6,14 @@ const ordersSchema = new Schema({
         type: String,
         required: true,
     },
-    name: {
-        type: String,
-        required: true,
-    },
     phone: {
         type: Number,
         required: true,
     },
-    isDelivered: {
-        type: Boolean,
-        required: true,
-    },
-    date: {
+    status: {
         type: String,
         required: true,
+        default: 'Pending',
     },
     address: {
         type: String,
@@ -36,15 +29,28 @@ const ordersSchema = new Schema({
             required: true,
         }
     },
-    total: {
+    orderItems: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OrderItem',
+        required: true,
+    }],
+    totalPrice: {
         type: Number,
         required: true,
     },
     user: {
-        userID: {
-            type: String,
-            required: true,
-        },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    dateOrdered: {
+        type: Date,
+        default: Date.now,
+    },
+    shop: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Shop',
+        required: true,
     },
 });
 

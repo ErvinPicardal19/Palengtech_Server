@@ -16,7 +16,6 @@ const productsSchema = new Schema({
     },
     description: {
         type: String,
-        required: true,
     },
     price: {
         type: Number,
@@ -32,13 +31,12 @@ const productsSchema = new Schema({
     },
     isFeatured: {
         type: Boolean,
-        required: true,
+        default: false,
     },
     shop: {
-        shopID: {
-            type: String,
-            required: true,
-        },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Shop',
+        required: true,
     },
 });
 

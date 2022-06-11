@@ -16,7 +16,7 @@ const shopsSchema = new Schema({
     },
     isFeatured: {
         type: Boolean,
-        required: true,
+        default: false,
     },
     name: {
         type: String,
@@ -35,6 +35,11 @@ const shopsSchema = new Schema({
             type: String,
             required: true,
         },
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
     },
 });
 

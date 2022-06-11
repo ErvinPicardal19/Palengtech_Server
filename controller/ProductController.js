@@ -8,16 +8,17 @@ const getAllProduct = async (req, res) => {
 
 const addProduct = async (req, res) => {
     console.log(req.body);
-    if (!req?.body?.name || !req?.body?.img || !req?.body?.price || !req?.body?.isFeatured) {
+    if (!req?.body?.name || !req?.body?.price || !req?.body?.shop || !req?.file) {
         // console.log("NGEK");
         return res.status(400).json({ 'message': 'Please provide credentials' });
     }
-
+    const fileName = req.file.filename
+    const basePath = `${req.protocol}://192.168.1.57:5000/public/uploads/`;
     try {
         const result = await Products.create({
             countInStock: req.body.countInStock,
             name: req.body.name,
-            img: req.body.img,
+            img: `${basePath}${fileName}`, //http://localhost:5000/public/uploads/(filename)
             description: req.body.description,
             price: req.body.price,
             numReviews: req.body.numReviews,
@@ -34,44 +35,51 @@ const addProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
 
-    if (!req?.body?.id) {
+    if (!req?.params?.id) {
         return res.status(400).json({ 'message': 'ID parameter is required' });
     }
 
-    const product = await Products.findOne({ _id: req.body.id }).exec();
+    let fileName = ''
+    let basePath = ''
+    if (req?.file) {
+        fileName = req.file.filename
+        basePath = `${req.protocol}://192.168.1.57:5000/public/uploads/`;
+    }
+
+    const product = await Products.findOne({ _id: req.params.id }).exec();
 
     if (!product) {
         return res.status(204).json({ "message": `No product matches ID ${req.body.id}.` });;
     }
 
-    if (req?.body?.countInStock) Products.countInStock = req.body.countInStock;
-    if (req?.body?.name) Products.name = req.body.name;
-    if (req?.body?.img) Products.img = req.body.img;
-    if (req?.body?.description) Products.description = req.body.description;
-    if (req?.body?.price) Products.price = req.body.price;
-    if (req?.body?.numReviews) Products.numReviews = req.body.numReviews;
-    if (req?.body?.rating) Products.rating = req.body.rating;
-    if (req?.body?.isFeatured) Products.isFeatured = req.body.isFeatured;
-    if (req?.body?.shop?.shopID) Products.shop.shopID = req.body.shop.shopID;
+    if (req?.body?.countInStock) product.countInStock = req.body.countInStock;
+    if (req?.body?.name) product.name = req.body.name;
+    if (req?.file) product.img = `${basePath}${fileName}`;
+    if (req?.body?.description) product.description = req.body.description;
+    if (req?.body?.price) product.price = req.body.price;
+    if (req?.body?.numReviews) product.numReviews = req.body.numReviews;
+    if (req?.body?.rating) product.rating = req.body.rating;
+    if (req?.body?.isFeatured !== product.isFeatured) product.isFeatured = req.body.isFeatured;
+    if (req?.body?.shop) product.shop = req.body.shop;
 
 
     const result = await product.save();
-
+    console.log(result);
     res.status(200).json({ success: true, data: result });
 }
 
 const deleteProduct = async (req, res) => {
-    if (!req?.body?.id) return res.status(400).json({ "message": "ID parameter is required" });
+    if (!req?.params?.id) return res.status(400).json({ "message": "ID parameter is required" });
 
 
-    const product = await Products.findOne({ _id: req.body.id }).exec()
+    const product = await Products.findOne({ _id: req.params.id }).exec()
 
     if (!product) {
         res.status(404).json({ success: false, msg: "Not Found!" });
         return;
     }
 
-    const result = await Products.deleteOne({ _id: req.body.id })
+    const result = await Products.deleteOne({ _id: req.params.id })
 
     res.status(200).json({ success: true, data: result });
 }
@@ -79,7 +87,7 @@ const deleteProduct = async (req, res) => {
 const getProduct = async (req, res) => {
     if (!req?.params?.id) return res.status(400).json({ "message": "ID parameter is required" });
 
-    const product = await Products.find({ "shop.shopID": req.params.id })
+    const product = await Products.find({ shop: req.params.id })
 
     if (!product) {
         res.status(404).json({ success: false, msg: "Not Found!" });
